@@ -14,12 +14,17 @@
         <h1>National Park Finder</h1>
 
         <form id="js-form">
-            <label for="search-term">Search State</label>
+            <label class="search-term" for="search-term">Search State</label>
             <!--<input type="text" name="search-state" id="js-search-state" required>-->
-            <select name="search-state" id="js-search-state" required>
-                
+            <select name="search-state" class="js-search-state" required>
+                <option value="" disabled selected>Choose a State</option>
             </select>
+            <button type='button' id='js-pick-state'>Select</button>
             <br>
+            <section id='js-selections'>
+                
+            </section>
+            
             <br>
 
             <label for="max-results">Maximum results to return</label>

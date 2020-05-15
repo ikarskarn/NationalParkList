@@ -26,3 +26,21 @@
   .hidden {
     display: none;
   }
+
+  #js-pick-state, #js-delete-state {
+    background-color: Transparent;
+    background-repeat:no-repeat;
+    border: none;
+    cursor:pointer;
+    overflow: hidden;
+    color: blue;  
+  }
+
+  #js-pick-state:hover, #js-delete-state:hover {
+    color: red;
+  }
+
+  .selection {
+    margin: 3px 0px;
+  }
+

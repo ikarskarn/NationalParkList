@@ -55,7 +55,10 @@ const dropdownList = {
     WI: "Wisconsin",
     WY: "Wyoming",
 };
-let currentState = '';
+let currentStates = [];
+let numberOfSelections = 0;
+let searchState = '';
+const pickedStates = [];
 
 function formatQueryParams(params) {
   const queryItems = Object.keys(params)
@@ -65,18 +68,23 @@ function formatQueryParams(params) {
 
 function displayResults(responseJson) {
     //if there are previous results, remove them
+    $('#js-state').text(currentStates.join(' | '));
     $('#results-list').empty();
+    $('#js-selections').empty();
+    currentStates.length=0;
     // iterate through the items array
-    $('#js-state').text(currentState);
+    //const chosenStateNames = currentState.join(', ');
+    //$('#js-state').text(`${responseJson.data[i].addresses.stateCode}`);
     for (let i = 0; i < responseJson.data.length; i++) {
         // for each data object in the items array, add a list item to the results list with the
         //Full Name of the Park
         //Description,
         //and Website URL
+
         $('#results-list').append(
             `<li><h3>${responseJson.data[i].name}</h3>
             <p>${responseJson.data[i].description}</p>
-            <a href='${responseJson.data[i].url}'>${responseJson.data[i].name} Website</a>
+            <a href='${responseJson.data[i].url}' target="_blank">${responseJson.data[i].name} Website</a>
             </li>`
         )};
     
@@ -85,9 +93,9 @@ function displayResults(responseJson) {
 };
 
 function getNationalParks(query, maxResults=10) {
-
+    const list = query.join(',');
     const params = {
-        stateCode: query,
+        stateCode: list,
         limit: maxResults,
     };
 
@@ -117,20 +125,52 @@ function getNationalParks(query, maxResults=10) {
 function createDropdown() {
     //use the dropdown object to create a dropdown in the DOM
     for (let [key, value] of Object.entries(dropdownList)) {
-        $('#js-search-state').append(
-            `<option value="${key}">${value}</option>`
+        $('.js-search-state').append(
+            `<option class="${key}" value="${key}">${value}</option>`
     )};
 }
 
 function watchForm() {
-    createDropdown();
+    //createDropdown();
     $('form').submit(event => {
         event.preventDefault();
-        const searchState = $('#js-search-state').val();
-        currentState = dropdownList[searchState];
-        const maxResults = $('#js-max-results').val();
-        getNationalParks(searchState, maxResults);
+        //searchState = $('.js-search-state').val();
+        //currentState.push(dropdownList[searchState]);
+        for(let i = 0; i < pickedStates.length; i++) {
+            console.log(pickedStates[i]);
+            $(`.${pickedStates[i]}`).removeClass('hidden');
+        }
+        const maxResults = $('.js-max-results').val();
+        $(".js-search-state").attr("required");
+        getNationalParks(pickedStates, maxResults);
+        
+    });
+    
+    $('#js-pick-state').on('click', event => {
+        event.preventDefault();
+        searchState = $('.js-search-state').val();
+        if(searchState === null) {
+            alert('Please Choose a State');
+            return;    
+        }
+        //numberOfSelections += 1;
+        $('#js-selections').append(
+            `<p class='selection' >${dropdownList[searchState]}</p>`
+        );
+        pickedStates.push(searchState);
+        currentStates.push(dropdownList[searchState]);
+        //$('.js-search-state').removeAttr('required');
+        $(".js-search-state").removeAttr("required");
+        $(`.${searchState}`).addClass('hidden');
+        $(".js-search-state option:first").prop("selected", "selected");
+        
+        console.log('hit add state button');
     });
 }
 
-$(watchForm);
+function handleInit() {
+    watchForm();
+    createDropdown();
+}
+
+$(handleInit);
